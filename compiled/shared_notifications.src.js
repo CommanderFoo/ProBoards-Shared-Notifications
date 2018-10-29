@@ -1,7 +1,7 @@
 class Shared_Notifications {
 
 	static init(){
-		this.VERSION = "1.0.0";
+		this.VERSION = "1.0.1";
 
 		this.PLUGIN_KEY = "pd_shared_notifications";
 		this.PLUGIN_ID = "pd_shared_notifications";
@@ -18,10 +18,9 @@ class Shared_Notifications {
 		this.ROUTE = pb.data("route");
 
 		this.setup();
-		this.setup_data();
 		this.api.init();
 
-		this.can_view = this.api.permission().can_view();
+		this.can_view = this.api.permission.can_view();
 
 		if(this.can_view){
 			Shared_Notifications_Display.init();
@@ -49,7 +48,7 @@ class Shared_Notifications {
 
 			let msg = "Hi " + (+ new Date());
 
-			let p = this.api.create().notification(msg);
+			let p = this.api.create.notification(msg);
 
 			if(p != null){
 				p.then(s => {
@@ -63,7 +62,7 @@ class Shared_Notifications {
 
 		$("#get-notifications").click(() => {
 
-			console.log(this.api.get().notifications());
+			console.log(this.api.get.notifications());
 
 		});*/
 
@@ -80,25 +79,6 @@ class Shared_Notifications {
 				this.IMAGES = plugin.images;
 			}
 		}
-	}
-
-	static setup_data(){
-		/*let data = proboards.plugin.keys.data[this.PLUGIN_KEY];
-
-		for(let [object_key, value] of Object.entries(data)){
-			let id = parseInt(object_key, 10) || 0;
-
-			if(id > 0){
-				let user_data = this.KEY_DATA.get(id);
-
-				if(!user_data){
-					user_data = new profile_notifications.data(id);
-					this.KEY_DATA.set(id, user_data);
-				}
-
-				user_data.setup(value);
-			}
-		}*/
 	}
 
 	static html_encode(str = "", decode_first = false){
@@ -141,7 +121,7 @@ class Shared_Notifications_Display {
 
 	static init(){
 		this.total_showing = parseInt(Shared_Notifications.SETTINGS.show, 10);
-		this.notifications = Shared_Notifications.api.get().notifications().slice().reverse();
+		this.notifications = Shared_Notifications.api.get.notifications().slice().reverse();
 	}
 
 	static display_tip(){
@@ -350,27 +330,11 @@ Shared_Notifications.api = class {
 
 	static init(){
 		this.parsers = [];
-	}
 
-	static register_parser(func){
-		if(func){
-			this.parsers.push(func);
-		}
-	}
+		this.create = {
 
-	static parse(notification){
-		for(let i = 0, l = this.parsers.length; i < l; ++ i){
-			notification = this.parsers[i](notification);
-		}
+			notification: message => {
 
-		return notification;
-	}
-
-	static create(){
-
-		return {
-
-			notification(message = ""){
 				let data = message + "@@" + (+ new Date());
 				let p = null;
 				let key_obj = Shared_Notifications.api.key(Shared_Notifications.PLUGIN_KEY);
@@ -416,16 +380,15 @@ Shared_Notifications.api = class {
 				}
 
 				return p;
+
 			}
-		}
 
-	}
+		};
 
-	static get(){
+		this.get = {
 
-		return {
+			notifications: () => {
 
-			notifications(){
 				let n = Shared_Notifications.api.key(Shared_Notifications.PLUGIN_KEY).get();
 
 				if(!Array.isArray(n)){
@@ -433,16 +396,15 @@ Shared_Notifications.api = class {
 				}
 
 				return n;
+
 			}
 
 		};
-	}
 
-	static permission(){
+		this.permission = {
 
-		return {
+			can_view: () => {
 
-			can_view(){
 				if(pb.data("user").is_logged_in){
 					let user_id = parseInt(pb.data("user").id, 10);
 
@@ -452,11 +414,27 @@ Shared_Notifications.api = class {
 				}
 
 				return false;
+
 			}
 
+		};
+
+	}
+
+
+	static register_parser(func){
+		if(func){
+			this.parsers.push(func);
 		}
 	}
 
+	static parse(notification){
+		for(let i = 0, l = this.parsers.length; i < l; ++ i){
+			notification = this.parsers[i](notification);
+		}
+
+		return notification;
+	}
 
 };
 

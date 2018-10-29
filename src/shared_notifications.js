@@ -18,10 +18,9 @@ class Shared_Notifications {
 		this.ROUTE = pb.data("route");
 
 		this.setup();
-		this.setup_data();
 		this.api.init();
 
-		this.can_view = this.api.permission().can_view();
+		this.can_view = this.api.permission.can_view();
 
 		if(this.can_view){
 			Shared_Notifications_Display.init();
@@ -49,7 +48,7 @@ class Shared_Notifications {
 
 			let msg = "Hi " + (+ new Date());
 
-			let p = this.api.create().notification(msg);
+			let p = this.api.create.notification(msg);
 
 			if(p != null){
 				p.then(s => {
@@ -63,7 +62,7 @@ class Shared_Notifications {
 
 		$("#get-notifications").click(() => {
 
-			console.log(this.api.get().notifications());
+			console.log(this.api.get.notifications());
 
 		});*/
 
@@ -80,25 +79,6 @@ class Shared_Notifications {
 				this.IMAGES = plugin.images;
 			}
 		}
-	}
-
-	static setup_data(){
-		/*let data = proboards.plugin.keys.data[this.PLUGIN_KEY];
-
-		for(let [object_key, value] of Object.entries(data)){
-			let id = parseInt(object_key, 10) || 0;
-
-			if(id > 0){
-				let user_data = this.KEY_DATA.get(id);
-
-				if(!user_data){
-					user_data = new profile_notifications.data(id);
-					this.KEY_DATA.set(id, user_data);
-				}
-
-				user_data.setup(value);
-			}
-		}*/
 	}
 
 	static html_encode(str = "", decode_first = false){

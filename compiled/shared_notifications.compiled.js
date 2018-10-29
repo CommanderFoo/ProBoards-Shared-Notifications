@@ -12,7 +12,7 @@ var Shared_Notifications = function () {
 	_createClass(Shared_Notifications, null, [{
 		key: "init",
 		value: function init() {
-			this.VERSION = "1.0.0";
+			this.VERSION = "1.0.1";
 
 			this.PLUGIN_KEY = "pd_shared_notifications";
 			this.PLUGIN_ID = "pd_shared_notifications";
@@ -28,10 +28,9 @@ var Shared_Notifications = function () {
 			this.ROUTE = pb.data("route");
 
 			this.setup();
-			this.setup_data();
 			this.api.init();
 
-			this.can_view = this.api.permission().can_view();
+			this.can_view = this.api.permission.can_view();
 
 			if (this.can_view) {
 				Shared_Notifications_Display.init();
@@ -58,7 +57,7 @@ var Shared_Notifications = function () {
 
 			/*$("#create-notification").click(() => {
    			let msg = "Hi " + (+ new Date());
-   			let p = this.api.create().notification(msg);
+   			let p = this.api.create.notification(msg);
    			if(p != null){
    		p.then(s => {
    					console.log(JSON.stringify(this.api.get().notifications()).length);
@@ -66,7 +65,7 @@ var Shared_Notifications = function () {
    	}
    		});
    		$("#get-notifications").click(() => {
-   			console.log(this.api.get().notifications());
+   			console.log(this.api.get.notifications());
    		});*/
 		}
 	}, {
@@ -82,22 +81,6 @@ var Shared_Notifications = function () {
 					this.IMAGES = plugin.images;
 				}
 			}
-		}
-	}, {
-		key: "setup_data",
-		value: function setup_data() {
-			/*let data = proboards.plugin.keys.data[this.PLUGIN_KEY];
-   		for(let [object_key, value] of Object.entries(data)){
-   	let id = parseInt(object_key, 10) || 0;
-   			if(id > 0){
-   		let user_data = this.KEY_DATA.get(id);
-   				if(!user_data){
-   			user_data = new profile_notifications.data(id);
-   			this.KEY_DATA.set(id, user_data);
-   		}
-   				user_data.setup(value);
-   	}
-   }*/
 		}
 	}, {
 		key: "html_encode",
@@ -162,7 +145,7 @@ var Shared_Notifications_Display = function () {
 		key: "init",
 		value: function init() {
 			this.total_showing = parseInt(Shared_Notifications.SETTINGS.show, 10);
-			this.notifications = Shared_Notifications.api.get().notifications().slice().reverse();
+			this.notifications = Shared_Notifications.api.get.notifications().slice().reverse();
 		}
 	}, {
 		key: "display_tip",
@@ -397,30 +380,10 @@ Shared_Notifications.api = function () {
 		key: "init",
 		value: function init() {
 			this.parsers = [];
-		}
-	}, {
-		key: "register_parser",
-		value: function register_parser(func) {
-			if (func) {
-				this.parsers.push(func);
-			}
-		}
-	}, {
-		key: "parse",
-		value: function parse(notification) {
-			for (var i = 0, l = this.parsers.length; i < l; ++i) {
-				notification = this.parsers[i](notification);
-			}
 
-			return notification;
-		}
-	}, {
-		key: "create",
-		value: function create() {
+			this.create = {
 
-			return {
-				notification: function notification() {
-					var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+				notification: function notification(message) {
 
 					var data = message + "@@" + +new Date();
 					var p = null;
@@ -468,14 +431,13 @@ Shared_Notifications.api = function () {
 
 					return p;
 				}
-			};
-		}
-	}, {
-		key: "get",
-		value: function get() {
 
-			return {
+			};
+
+			this.get = {
+
 				notifications: function notifications() {
+
 					var n = Shared_Notifications.api.key(Shared_Notifications.PLUGIN_KEY).get();
 
 					if (!Array.isArray(n)) {
@@ -484,14 +446,13 @@ Shared_Notifications.api = function () {
 
 					return n;
 				}
-			};
-		}
-	}, {
-		key: "permission",
-		value: function permission() {
 
-			return {
+			};
+
+			this.permission = {
+
 				can_view: function can_view() {
+
 					if (pb.data("user").is_logged_in) {
 						var user_id = parseInt(pb.data("user").id, 10);
 
@@ -502,7 +463,24 @@ Shared_Notifications.api = function () {
 
 					return false;
 				}
+
 			};
+		}
+	}, {
+		key: "register_parser",
+		value: function register_parser(func) {
+			if (func) {
+				this.parsers.push(func);
+			}
+		}
+	}, {
+		key: "parse",
+		value: function parse(notification) {
+			for (var i = 0, l = this.parsers.length; i < l; ++i) {
+				notification = this.parsers[i](notification);
+			}
+
+			return notification;
 		}
 	}]);
 

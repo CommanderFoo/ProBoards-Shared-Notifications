@@ -2,7 +2,7 @@ class Shared_Notifications_Display {
 
 	static init(){
 		this.total_showing = parseInt(Shared_Notifications.SETTINGS.show, 10);
-		this.notifications = Shared_Notifications.api.get().notifications().slice().reverse();
+		this.notifications = Shared_Notifications.api.get.notifications().slice().reverse();
 	}
 
 	static display_tip(){
